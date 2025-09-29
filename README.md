@@ -1,6 +1,8 @@
 # Yuffin Video Container
 
 ![License](https://img.shields.io/badge/license-MIT-green)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
 An incredibly efficient, 100% client-side video container that enables instant loading and seamless playback of gigabyte-sized archives directly in your web browser, with no server required. This project leverages the power of native browser APIs (`File API`) to achieve performance that feels almost impossible.
 
@@ -87,7 +89,7 @@ An elegant, standalone player for browsing the contents of `.yuf` containers.
 
 1.  **Running the Player:**
     Simply **open the `index.html` file in a modern web browser** (e.g., Google Chrome, Microsoft Edge, Firefox).
-    or 
+    or open [Page](https://zbirow.github.io/Yuffin-Video-Archive/)
 2.  **How to Use:**
     *   Click the "Select .yuf Container" button to load your archive.
     *   The list of videos will appear automatically.
@@ -95,4 +97,4 @@ An elegant, standalone player for browsing the contents of `.yuf` containers.
 
 ## 📜 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
