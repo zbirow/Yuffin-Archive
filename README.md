@@ -65,7 +65,7 @@ The binary structure of the container file is simple and predictable.
 
 ## 🛠️ Usage
 
-### Packer Tool (`yuf_video_packer.py`)
+### Packer Tool (`Yuffin-Video-Archive.py`)
 
 A desktop GUI application for creating and unpacking `.yuf` container files.
 
@@ -77,13 +77,13 @@ A desktop GUI application for creating and unpacking `.yuf` container files.
 2.  **Running the Application:**
     Execute the script from your terminal:
     ```bash
-    python yuf_video_packer.py
+    python Yuffin-Video-Archive.py
     ```
 3.  **Features:**
     *   **Packing:** Select the video files you want to archive, then choose a save location for the new `.yuf` container.
     *   **Unpacking:** Select an existing `.yuf` file to view its contents, then extract all files to a directory of your choice.
 
-### Web Player (`yuf_player_pro.html`)
+### Web Player (`Index.html`)
 
 An elegant, standalone player for browsing the contents of `.yuf` containers.
 
