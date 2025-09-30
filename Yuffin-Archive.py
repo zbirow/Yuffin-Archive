@@ -59,10 +59,7 @@ class YufVideoPacker(ctk.CTk):
         files = filedialog.askopenfilenames(
             title="Select video files",
              filetypes=[
-                ("Media Files", "*.mp4 *.mkv *.webm *.mov *.avi *.mp3 *.flac *.wav *.ogg *.m4a"),
-                ("Video Files", "*.mp4 *.mkv *.webm *.mov *.avi"),
-                ("Audio Files", "*.mp3 *.flac *.wav *.ogg *.m4a"),
-                ("Yuffin Image Archive", "*.yufi"),
+                ("Supported", "*.mp4 *.mkv *.webm *.mov *.avi *.mp3 *.flac *.wav *.ogg *.m4a *.yufi"),
                 ("All files", "*.*")
             ]
         )
