@@ -1,0 +1,496 @@
+/* --- GLOBALNE USTAWIENIA I PALETA KOLORÓW --- */
+:root {
+    --bg-color: #282c34;
+    --text-color: #abb2bf;
+    --border-color: #444;
+    --accent-color: #61afef;
+    --accent-hover: #528baf;
+    --placeholder-bg: #3a3f4b;
+    --surface-color: #21252b;
+    --border-radius: 5px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+}
+
+/* --- STYL STRONY STARTOWEJ (LAUNCHERA) --- */
+#launcher-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    text-align: center;
+    transition: opacity 0.3s;
+}
+
+#launcher-container h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+#launcher-container p {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+}
+
+.file-upload-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 14px 28px;
+    cursor: pointer;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.file-upload-label:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.05);
+}
+
+.file-upload-label svg {
+    width: 24px;
+    height: 24px;
+}
+
+.file-upload-label input[type="file"] {
+    display: none;
+}
+
+#status {
+    color: var(--text-color);
+    font-style: italic;
+    height: 20px;
+    margin-top: 1rem;
+}
+
+/* --- OGÓLNE STYLE MODALI APLIKACJI --- */
+.app-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    display: none;
+    z-index: 1000;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.modal-header h2 {
+    font-size: 1.2rem;
+}
+
+.close-btn {
+    font-size: 2.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-color);
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: white;
+}
+
+.modal-content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+/* --- STYLE DLA MODALA MEDIÓW (.YUF) --- */
+#media-viewer-content {
+    display: flex;
+    gap: 1.5rem;
+    height: 100%;
+    padding: 1.5rem;
+}
+
+#media-list-panel {
+    width: 350px;
+    flex-shrink: 0;
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    overflow-y: auto;
+}
+
+#mediaList {
+    list-style: none;
+}
+
+#mediaList li {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+#mediaList li:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+#mediaList li.active {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+.media-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 1rem;
+}
+
+.media-size {
+    flex-shrink: 0;
+}
+
+#player-panel {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    border-radius: var(--border-radius);
+    color: #555;
+    font-size: 1.2rem;
+}
+
+#mediaPlayer {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: var(--border-radius);
+}
+
+/* --- STYLE DLA MODALA OBRAZÓW (.YUFI) --- */
+#image-viewer-content {
+    padding: 1rem;
+}
+
+.controls-bar {
+    flex-shrink: 0;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--surface-color);
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
+
+.controls-bar > * {
+    margin: 5px;
+}
+
+.controls-bar select {
+    background-color: #4b5263;
+    color: white;
+    border: 1px solid #666;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #4b5263;
+    transition: .4s;
+    border-radius: 28px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--accent-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+#image-gallery-container {
+    background: #21252b;
+    border-radius: var(--border-radius);
+}
+
+#image-gallery-container.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    padding: 10px;
+}
+
+.gallery-item {
+    width: 100%;
+    padding-top: 75%;
+    background-color: var(--placeholder-bg);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.gallery-item img.loaded {
+    opacity: 1;
+}
+
+#image-gallery-container.comic-view {
+    text-align: center;
+    padding: 10px 0;
+}
+
+#image-gallery-container.comic-view .gallery-item {
+    width: 100%;
+    max-width: 1000px;
+    padding-top: 0;
+    height: auto;
+    background-color: transparent;
+    margin: 0 auto;
+}
+
+#image-gallery-container.comic-view .gallery-item img {
+    position: static;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.chapter-navigation {
+    flex-shrink: 0;
+    display: none;
+    margin: 1.5rem 0 1rem 0;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+.chapter-navigation button,
+#pagination button {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.chapter-navigation button:disabled,
+#pagination button:disabled {
+    background-color: #4b5263;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.chapter-navigation span {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#pagination {
+    flex-shrink: 0;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* --- STYLE DLA PRZYCISKÓW Z IKONAMI --- */
+.controls-bar button#fullscreen-btn,
+.chapter-navigation button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.chapter-navigation button .bi {
+    font-size: 1.2rem;
+}
+
+.controls-bar button#fullscreen-btn {
+    padding: 8px;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.controls-bar button#fullscreen-btn:hover {
+    background-color: #4b5263;
+    border-color: var(--accent-color);
+}
+
+.controls-bar button#fullscreen-btn .bi {
+    font-size: 1rem;
+    /* Usuwamy vertical-align, bo centrowanie załatwia flexbox */
+}
+
+/* --- LOGIKA ZMIANY IKONY FULLSCREEN --- */
+#fullscreen-btn .bi-fullscreen-exit {
+    display: none;
+}
+
+#fullscreen-btn .bi-fullscreen {
+    display: inline-block;
+}
+
+#image-viewer-modal:fullscreen #fullscreen-btn .bi-fullscreen-exit {
+    display: inline-block;
+}
+
+#image-viewer-modal:fullscreen #fullscreen-btn .bi-fullscreen {
+    display: none;
+}
+
+#image-viewer-modal:fullscreen {
+    background-color: #21252b;
+}
+/* --- NOWE STYLE DLA LIGHTBOXA --- */
+#lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none; /* Domyślnie ukryty */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Musi być nad innym modalem */
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+#lightbox.visible {
+    display: flex;
+}
+
+#lightbox-image {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    user-select: none;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#close-lightbox-btn {
+    position: absolute;
+    top: 0;
+    right: 15px;
+}
+
+.lightbox-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s, transform 0.2s;
+    padding: 1.5rem 1rem;
+}
+.lightbox-nav-btn:hover {
+    color: var(--accent-color);
+    transform: translateY(-50%) scale(1.1);
+}
+.lightbox-nav-btn.prev { left: 5px; }
+.lightbox-nav-btn.next { right: 5px; }
+
+#lightbox-counter {
+    position: absolute;
+    bottom: 20px;
+    color: var(--text-color);
+    background-color: rgba(0,0,0,0.7);
+    padding: 8px 18px;
+    border-radius: 20px;
+}
