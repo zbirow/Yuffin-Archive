@@ -1,76 +1,94 @@
-# Yuffin Archive
+# Yuffin Universal Media Archive
 
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
+[![JavaScript Version](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)]()
 
-An incredibly efficient, 100% client-side video/audio container that enables instant loading and seamless playback of gigabyte-sized archives directly in your web browser, with no server required. This project leverages the power of native browser APIs (`File API`) to achieve performance that feels almost impossible.
+A revolutionary, 100% client-side ecosystem for archiving and viewing massive media collections. Yuffin introduces two specialized, high-performance container formats that enable instant loading and seamless browsing of multi-gigabyte archives directly in your web browser, with zero server dependency.
 
-## 🚀 Key Features
+## 🚀 Core Philosophy
 
-*   **Instant Loading:** Open multi-gigabyte container files (`.yuf`) in a fraction of a second. The file index is read instantly, regardless of the archive's total size.
-*   **Seamless Seeking:** Jump to any point in a 2GB+ video file with zero lag. The player uses a highly optimized, native mechanism for accessing file data.
-*   **Zero Dependencies (Player):** The player is a single, self-contained HTML file that requires no installation, no server, and no external libraries. It works entirely offline.
-*   **Multi-Format Support:** Flawlessly plays `.mp4`, `.mkv`, `.mp3`, and other video/audio containers supported by modern web browsers.
-*   **Simple & Open Format:** The `.yuf` file format specification is fully documented, straightforward, and easy to implement in other tools.
-*   **Memory Efficient:** Thanks to the `File.slice()` operation, the entire video/audio file is never copied into RAM—only the small buffers needed for current playback.
+This project challenges the conventional wisdom that handling huge local files in a browser is slow and inefficient. By leveraging the power of native browser APIs (`File API`, `Blob`, `slice()`), Yuffin achieves performance that feels almost impossible, proving that a simple, elegant architecture can outperform complex systems.
 
-## 💡 How It Works
+## 🌟 Key Features
 
-The secret to this project's incredible performance lies in its clever use of how modern web browsers handle local files.
+*   **Universal Launcher:** A single, clean interface to open both `.yuf` (for large media) and `.yufi` (for image collections) container files.
+*   **Blazing Fast Performance:** Open multi-gigabyte archives in a fraction of a second. The system only reads the tiny index, not the entire file.
+*   **Zero Dependencies:** The entire front-end is a single, self-contained HTML file. No installation, no servers, no external libraries. It works perfectly offline.
+*   **Two Specialized Formats:**
+    *   **`.yuf` (Media Container):** Optimized for a smaller number of large files like videos and audio albums. Features a centralized JSON index for instant content listing.
+    *   **`.yufi` (Image Archive):** Optimized for thousands of smaller files. Features a binary file system structure for maximum scalability and fast random access.
+*   **Extreme Memory Efficiency:** Thanks to `File.slice()`, media files are never fully loaded into RAM. The application only references data on disk, enabling smooth playback of 2GB+ videos on machines with limited memory.
 
-1.  **The Packer Tool (`Yuffin-Archive.py`):**
-    *   The application builds a "table of contents" (an index) in memory. This JSON index contains metadata for each file: its name, size, MIME type, and its future position (offset) within the container.
-    *   It then iteratively calculates the precise final size of this index to determine the exact byte where the binary video data will begin.
-    *   Finally, it writes everything to a single `.yuf` file: a fixed `YUFFIN` header, the precisely calculated index, and then appends the raw binary data of all video/audio files, one after another.
+## 💡 Architecture: A Launcher with Modular Viewers
 
-2.  **The Web Player (`index.html`):**
-    *   When a `.yuf` file is selected, the player reads **only the first few kilobytes** from the disk to parse the header and the index. This operation is instantaneous, even for a 23 GB file.
-    *   When the user clicks on a video, the JavaScript code calls `File.slice(offset, offset + size)`. This function **does not copy 2 GB of data into RAM**. Instead, it creates a lightweight `Blob` object, which is merely a **pointer (or reference)** to a segment of the original file on the disk.
-    *   This pointer, wrapped in a temporary URL, is passed to the native `<video>` player element. The player, seeing a reference to a disk file, uses its own highly optimized internal mechanisms to buffer and seek through the data as if it were a normal, single file.
+Yuffin's elegance lies in its modular architecture. Instead of one monolithic application, it functions as a central launcher that opens the appropriate specialized viewer based on the file's signature.
 
-> In short: We've created a custom, simple file system inside a single file, and the browser turns out to be an incredibly efficient engine for reading it.
+1.  **The Launcher (`index.html`):** A minimalist welcome screen whose sole purpose is to select a `.yuf` or `.yufi` file.
+2.  **File Router:** Upon file selection, the JavaScript code reads the first 6 bytes to identify the file signature (`YUFFIN` or `Yuffin`).
+3.  **Modular Viewers:** The correct full-screen modal application is launched:
+    *   **Media Viewer (`.yuf`):** A professional player interface with a file list and a large playback window for video and audio.
+    *   **Image Archive Viewer (`.yufi`):** A complete, feature-rich gallery application ported from the original Yuffin Image Archive project.
 
-## 📦 File Format Specification (`.yuf`)
+This approach keeps the code clean, separates concerns, and allows each viewer to be perfectly optimized for its specific task.
 
-The binary structure of the container file is simple and predictable.
+## ✨ Feature List
 
-| Offset (bytes) | Size (bytes)  | Description                                                                 |
-| :------------- | :------------ | :-------------------------------------------------------------------------- |
-| `0-5`          | `6`           | **Signature:** The ASCII text `YUFFIN`.                                     |
-| `6-7`          | `2`           | **Padding:** Two null bytes (`\x00\x00`) for 8-byte alignment.               |
-| `8-15`         | `8`           | **Index Length:** A 64-bit unsigned integer (big-endian) specifying the size of the Base64-encoded index that follows. |
-| `16 - ...`     | *Variable*    | **Index:** A JSON array of file metadata objects, encoded to `UTF-8` then `Base64`. |
-| `...`          | *File Remainder* | **Binary Data:** The raw, concatenated binary data of all video/audio files.     |
+### Universal Launcher
+-   Single-click file selection for both `.yuf` and `.yufi` formats.
+-   Automatic detection of container type based on binary signature.
+-   Clean, minimalist user interface.
 
-#### JSON Index Object Structure:
-```json
-[
-    {
-        "id": 0,
-        "name": "movie_title.mp4",
-        "size": 56008554,
-        "mime": "video/mp4",
-        "offset": 3676
-    },
-    {
-        "id": 1,
-        "name": "another_film.mkv",
-        "size": 122267429,
-        "mime": "video/x-matroska",
-        "offset": 56012230
-    }
-]
-```
+### Media Viewer (.yuf files)
+-   Instant listing of all video, audio, and nested `.yufi` archives.
+-   On-demand media player: player element is created only when a file is clicked.
+-   Seamless, lag-free seeking in large video and audio files.
+-   Support for a wide range of formats (`.mp4`, `.mkv`, `.mp3`, `.flac`, etc.).
+-   **Nested Archive Support:** Clicking a `.yufi` archive within a `.yuf` file seamlessly closes the media viewer and opens the image viewer.
+
+### Image Archive Viewer (.yufi files)
+-   **Two Viewing Modes:**
+    -   **Grid View:** A responsive grid of thumbnails for quickly browsing large collections.
+    -   **Comic View:** A vertical, single-column layout perfect for reading manga or comics.
+-   **Directory Filtering:** A dropdown menu to filter images by their original folder structure.
+-   **Chapter Navigation:** In comic view, easily jump between `chapter_*` directories with "Previous" and "Next" buttons.
+-   **Natural Sorting:** Chapters and directories are sorted logically (e.g., 1, 2, ..., 10, 11), not alphabetically.
+-   **Pagination:** Simple and effective page navigation for grid view.
+-   **Lightbox:** Click on any thumbnail in grid view to open a full-sized image viewer with keyboard and on-screen navigation.
+-   **Fullscreen Mode:** An immersive, browser-chrome-free viewing experience for the entire image viewer.
+
+## 📦 File Format Specifications
+
+### `.yuf` (Media Container)
+Optimized for large files, using a centralized JSON index.
+
+| Offset (bytes) | Size (bytes)  | Description                                 |
+| :------------- | :------------ | :------------------------------------------ |
+| `0-5`          | `6`           | **Signature:** The ASCII text `YUFFIN`.     |
+| `6-7`          | `2`           | **Padding:** Two null bytes (`\x00\x00`).    |
+| `8-15`         | `8`           | **Index Length:** 64-bit unsigned integer (big-endian) specifying the size of the Base64-encoded index. |
+| `16 - ...`     | *Variable*    | **Index:** A JSON array of file metadata objects, encoded to Base64. |
+| `...`          | *File Remainder* | **Binary Data:** The raw, concatenated data of all files. |
+
+### `.yufi` (Image Archive)
+Optimized for a vast number of small files, using a binary file-system-like structure.
+
+| Part                 | Description                                                              |
+| :------------------- | :----------------------------------------------------------------------- |
+| **Main Header** (38 bytes) | Contains the `Yuffin` signature, version, file/dir counts, and offsets to the tables. |
+| **Directory Table**  | A block of null-terminated strings representing all unique directory paths. |
+| **File Index Table** | A fixed-size entry for each image, containing the offset to its data block and its parent directory ID. |
+| **Data Blocks**      | A series of blocks, each prefixed with a `ZBIR` signature and data length, followed by the raw image data. |
 
 ## 🛠️ Usage
 
 ### Packer Tool (`Yuffin-Archive.py`)
 
-A desktop GUI application for creating and unpacking `.yuf` container files.
+A desktop GUI application for creating and unpacking both `.yuf` and `.yufi` container files.
 
 1.  **Dependencies:**
-    The application requires the `customtkinter` library. Install it using pip:
+    The application requires `customtkinter`. Install it using pip:
     ```bash
     pip install customtkinter
     ```
@@ -80,20 +98,20 @@ A desktop GUI application for creating and unpacking `.yuf` container files.
     python Yuffin-Archive.py
     ```
 3.  **Features:**
-    *   **Packing:** Select the video/audio files you want to archive, then choose a save location for the new `.yuf` container.
-    *   **Unpacking:** Select an existing `.yuf` file to view its contents, then extract all files to a directory of your choice.
+    *   **Packing:** Select media files (`.mp4`, `.mp3`, etc.) or pre-packed `.yufi` archives to create a new `.yuf` container. A separate tool ([`Yuffin Image Archive`](https://github.com/zbirow/Yuffin-Image-Archive)) is used to create the `.yufi` files.
+    *   **Unpacking:** Select an existing `.yuf` file to view its contents and extract all files to a directory of your choice.
 
-### Web Player (`Index.html`)
+### Web Launcher (`index.html`)
 
-An elegant, standalone player for browsing the contents of `.yuf` containers.
+An elegant, standalone application for browsing your Yuffin archives.
 
-1.  **Running the Player:**
+1.  **Running the Launcher:**
     Simply **open the `index.html` file in a modern web browser** (e.g., Google Chrome, Microsoft Edge, Firefox).
-    or open [Page](https://zbirow.github.io/Yuffin-Archive/)
+    Or visit the live page: [Page Link](https://zbirow.github.io/Yuffin-Archive/)
 2.  **How to Use:**
-    *   Click the "Select .yuf Container" button to load your archive.
-    *   The list of videos will appear automatically.
-    *   Click any video/audio in the list to begin playback instantly.
+    *   Click the "Select File" button to load your `.yuf` or `.yufi` archive.
+    *   The appropriate viewer will launch automatically.
+    *   Use the "X" button in the corner to close the viewer and return to the launcher screen.
 
 ## 📜 License
 
