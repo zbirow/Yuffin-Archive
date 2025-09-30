@@ -1,359 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Yuffin Video Player</title>
+    <title>Yuffin Universal Launcher</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        :root {
-            --color-background: #0a0a0a;
-            --color-surface: #1c1c1e;
-            --color-primary: #1e90ff;
-            --color-primary-hover: #40c4ff;
-            --color-text-primary: #f5f5f5;
-            --color-text-secondary: #b0b0b0;
-            --color-border: #2a2a2a;
-            --border-radius: 12px;
-            --shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1c2526 100%);
-            color: var(--color-text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 2rem 1rem;
-        }
-
-        #app-container {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            background: var(--color-surface);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        header h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            text-align: center;
-            background: linear-gradient(90deg, var(--color-primary), #40c4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-        }
-
-        #file-selector {
-            text-align: center;
-        }
-
-        .custom-file-upload {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 14px 28px;
-            cursor: pointer;
-            background: var(--color-primary);
-            color: white;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: transform 0.2s ease, background 0.2s ease;
-            box-shadow: var(--shadow);
-        }
-
-        .custom-file-upload:hover {
-            background: var(--color-primary-hover);
-            transform: translateY(-2px);
-        }
-
-        .custom-file-upload svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .custom-file-upload input[type="file"] {
-            display: none;
-        }
-
-        #status {
-            text-align: center;
-            color: var(--color-text-secondary);
-            font-size: 1rem;
-            transition: color 0.2s ease;
-        }
-
-        #player-wrapper {
-            display: none;
-            position: relative;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        #videoPlayer {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border: none;
-        }
-
-        #list-section {
-            display: none;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            border: 1px solid var(--color-border);
-        }
-
-        #list-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--color-text-primary);
-        }
-
-        #videoList {
-            list-style: none;
-            max-height: 30vh;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--color-primary) var(--color-surface);
-        }
-
-        #videoList li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background 0.2s ease, transform 0.2s ease;
-        }
-
-        #videoList li:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-
-        #videoList li.active {
-            background: var(--color-primary);
-            color: white;
-            font-weight: 600;
-        }
-
-        .video-name {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding-right: 1rem;
-        }
-
-        .video-size {
-            flex-shrink: 0;
-            color: var(--color-text-secondary);
-        }
-
-        #videoList li.active .video-size {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        @media (max-width: 768px) {
-            #app-container {
-                padding: 1rem;
-            }
-
-            header h1 {
-                font-size: 2rem;
-            }
-
-            .custom-file-upload {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
-<main id="app-container">
-    <header>
-        <h1>Yuffin Video Player</h1>
-    </header>
 
-    <section id="file-selector">
-        <label class="custom-file-upload">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
-            </svg>
-            <span>Select .yuf container</span>
-            <input type="file" id="fileInput" accept=".yuf">
-        </label>
-    </section>
-
-    <section id="player-wrapper">
-        <video id="videoPlayer" controls></video>
-    </section>
-
-    <section id="list-section">
-        <h2>Videos in container</h2>
-        <ul id="videoList"></ul>
-    </section>
+<!-- === STRONA STARTOWA (LAUNCHER) === -->
+<main id="launcher-container">
+    <h1>Yuffin Universal Launcher</h1>
+    <p>Wczytaj plik kontenera .yuf (media) lub .yufi (obrazy), aby rozpocząć.</p>
+    <label class="file-upload-label">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+        <span>Wybierz plik</span>
+        <input type="file" id="fileInput" accept=".yuf,.yufi">
+    </label>
+    <p id="status"></p>
 </main>
 
-<script>
-    const fileInput = document.getElementById('fileInput');
-    const statusLabel = document.getElementById('status');
-    const listSection = document.getElementById('list-section');
-    const videoListElement = document.getElementById('videoList');
-    const playerWrapper = document.getElementById('player-wrapper');
-    const videoPlayer = document.getElementById('videoPlayer');
+<!-- === MODAL DLA PLIKÓW MEDIALNYCH (.YUF) === -->
+<div id="media-viewer-modal" class="app-modal">
+    <header class="modal-header">
+        <h2 id="media-modal-title"></h2>
+        <span class="close-btn" data-modal-id="media-viewer-modal">&times;</span>
+    </header>
+    <div class="modal-content" id="media-viewer-content">
+        <div id="media-list-panel"><ul id="mediaList"></ul></div>
+        <div id="player-panel">Wybierz plik z listy, aby rozpocząć odtwarzanie.</div>
+    </div>
+</div>
 
-    let containerFile = null;
-    let videoIndex = null;
-    let currentObjectUrl = null;
-
-    const SIGNATURE = 'YUFFIN';
-    const STATIC_HEADER_SIZE = 16;
-
-    fileInput.addEventListener('change', handleFileSelect);
-
-    async function handleFileSelect(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        playerWrapper.style.display = 'none';
-        videoPlayer.src = '';
-        if (currentObjectUrl) {
-            URL.revokeObjectURL(currentObjectUrl);
-            currentObjectUrl = null;
-        }
-
-        containerFile = file;
-        statusLabel.textContent = `Analyzing file: ${file.name}...`;
-
-        try {
-            videoIndex = await loadContainerIndex(containerFile);
-            renderVideoList();
-            statusLabel.textContent = `Loaded! Select a video from the list.`;
-            listSection.style.display = 'block';
-            if (videoIndex.length > 0) {
-                const firstVideo = videoIndex[0];
-                document.querySelectorAll('#videoList li')[0].classList.add('active');
-                loadFirstVideo(firstVideo);
-            }
-        } catch (error) {
-            statusLabel.textContent = `ERROR: ${error.message}`;
-            alert(`File read error: ${error.message}`);
-        }
-    }
-
-    async function loadContainerIndex(file) {
-        if (file.size < STATIC_HEADER_SIZE) throw new Error("File is too small.");
-        
-        const headerSlice = file.slice(0, STATIC_HEADER_SIZE);
-        const headerBuffer = await headerSlice.arrayBuffer();
-        const dataView = new DataView(headerBuffer);
-
-        const signature = new TextDecoder("utf-8").decode(new Uint8Array(headerBuffer, 0, 6));
-        if (signature !== SIGNATURE) throw new Error("Invalid file signature.");
-
-        const indexSize = dataView.getBigUint64(8, false);
-        const indexEndOffset = STATIC_HEADER_SIZE + Number(indexSize);
-        if (file.size < indexEndOffset) throw new Error("Corrupted file, incomplete index.");
-        
-        const indexSlice = file.slice(STATIC_HEADER_SIZE, indexEndOffset);
-        const indexBase64 = await indexSlice.text();
-        const indexJson = new TextDecoder().decode(
-            Uint8Array.from(atob(indexBase64), c => c.charCodeAt(0))
-        );
-        return JSON.parse(indexJson);
-    }
-
-    function renderVideoList() {
-        videoListElement.innerHTML = '';
-        videoIndex.forEach(videoInfo => {
-            const li = document.createElement('li');
-            const sizeInMB = (videoInfo.size / 1024 / 1024).toFixed(2);
-            
-            li.innerHTML = `
-                <span class="video-name">${videoInfo.name}</span>
-                <span class="video-size">${sizeInMB} MB</span>
-            `;
-
-            li.addEventListener('click', () => {
-                document.querySelectorAll('#videoList li').forEach(el => el.classList.remove('active'));
-                li.classList.add('active');
-                playVideo(videoInfo);
-            });
-            videoListElement.appendChild(li);
-        });
-    }
-
-    function loadFirstVideo(videoInfo) {
-        statusLabel.textContent = `${videoInfo.name}`;
-
-        if (currentObjectUrl) {
-            URL.revokeObjectURL(currentObjectUrl);
-        }
-
-        const videoSlice = containerFile.slice(videoInfo.offset, videoInfo.offset + videoInfo.size);
-        const videoBlob = new Blob([videoSlice], { type: videoInfo.mime || 'application/octet-stream' });
-        currentObjectUrl = URL.createObjectURL(videoBlob);
-        
-        videoPlayer.src = currentObjectUrl;
-        playerWrapper.style.display = 'block';
-        playerWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-        videoPlayer.load();
-        videoPlayer.oncanplay = () => {
-            statusLabel.textContent = `${videoInfo.name}`;
-        };
-    }
-
-    function playVideo(videoInfo) {
-        statusLabel.textContent = `Loading: ${videoInfo.name}...`;
-
-        if (currentObjectUrl) {
-            URL.revokeObjectURL(currentObjectUrl);
-        }
-
-        const videoSlice = containerFile.slice(videoInfo.offset, videoInfo.offset + videoInfo.size);
-        const videoBlob = new Blob([videoSlice], { type: videoInfo.mime || 'application/octet-stream' });
-        currentObjectUrl = URL.createObjectURL(videoBlob);
-        
-        videoPlayer.src = currentObjectUrl;
-        playerWrapper.style.display = 'block';
-        playerWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-        videoPlayer.load();
-        videoPlayer.play().catch(e => {
-            console.error("Playback error:", e);
-            statusLabel.textContent = "Playback error. Check the developer console.";
-        });
-
-        videoPlayer.oncanplay = () => {
-            statusLabel.textContent = `Playing: ${videoInfo.name}`;
-        };
-    }
-</script>
+<!-- === MODAL DLA ARCHIWUM OBRAZÓW (.YUFI) === -->
+<div id="image-viewer-modal" class="app-modal">
+    <header class="modal-header">
+        <h2 id="image-modal-title"></h2>
+        <span class="close-btn" data-modal-id="image-viewer-modal">&times;</span>
+    </header>
+    <div class="modal-content" id="image-viewer-content-wrapper">
+        <div id="image-viewer-content">
+            <div class="controls-bar">
+                <select id="dir-filter"></select>
+                <div class="toggle-container">
+                    <label for="view-toggle">Widok komiksu:</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="view-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+               <button id="fullscreen-btn" title="Toggle Fullscreen">
+    <i class="bi bi-fullscreen"></i>
+    <i class="bi bi-fullscreen-exit"></i>
+</button>
+            </div>
+            <div class="chapter-navigation" id="chapter-navigation-top">
+                <button id="prev-chapter-top">Poprzedni</button>
+                <span id="current-chapter-top"></span>
+                <button id="next-chapter-top">Następny</button>
+            </div>
+            <div id="image-gallery-container" class="grid-view"></div>
+            <div class="pagination" id="pagination"></div>
+            <div class="chapter-navigation" id="chapter-navigation-bottom">
+                <button id="prev-chapter-bottom">Poprzedni</button>
+                <span id="current-chapter-bottom"></span>
+                <button id="next-chapter-bottom">Następny</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="lightbox">
+    <span id="close-lightbox-btn" class="close-btn">&times;</span>
+    <span id="prev-lightbox-btn" class="lightbox-nav-btn prev">&#10094;</span>
+    <img id="lightbox-image" src="" alt="Powiększony obraz">
+    <span id="next-lightbox-btn" class="lightbox-nav-btn next">&#10095;</span>
+    <div id="lightbox-counter"></div>
+</div>
+<script src="script.js"></script>
 </body>
 </html>
