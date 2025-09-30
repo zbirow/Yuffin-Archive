@@ -62,6 +62,7 @@ class YufVideoPacker(ctk.CTk):
                 ("Media Files", "*.mp4 *.mkv *.webm *.mov *.avi *.mp3 *.flac *.wav *.ogg *.m4a"),
                 ("Video Files", "*.mp4 *.mkv *.webm *.mov *.avi"),
                 ("Audio Files", "*.mp3 *.flac *.wav *.ogg *.m4a"),
+                ("Yuffin Image Archive", "*.yufi"),
                 ("All files", "*.*")
             ]
         )
@@ -104,7 +105,9 @@ class YufVideoPacker(ctk.CTk):
                 '.mov': 'video/quicktime', '.avi': 'video/x-msvideo',
                 # Audio formats
                 '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg',
-                '.flac': 'audio/flac', '.m4a': 'audio/mp4'
+                '.flac': 'audio/flac', '.m4a': 'audio/mp4',
+                # Yuffin Image Archive format
+                '.yufi': 'application/vnd.yuffin-image-archive'
             }
             self.update_packing_status("Analyzing files and building index...")
             
