@@ -19,7 +19,7 @@ An incredibly efficient, 100% client-side video/audio container that enables ins
 
 The secret to this project's incredible performance lies in its clever use of how modern web browsers handle local files.
 
-1.  **The Packer Tool (`Yuffin-Video-Archive.py`):**
+1.  **The Packer Tool (`Yuffin-Archive.py`):**
     *   The application builds a "table of contents" (an index) in memory. This JSON index contains metadata for each file: its name, size, MIME type, and its future position (offset) within the container.
     *   It then iteratively calculates the precise final size of this index to determine the exact byte where the binary video data will begin.
     *   Finally, it writes everything to a single `.yuf` file: a fixed `YUFFIN` header, the precisely calculated index, and then appends the raw binary data of all video/audio files, one after another.
@@ -65,7 +65,7 @@ The binary structure of the container file is simple and predictable.
 
 ## 🛠️ Usage
 
-### Packer Tool (`Yuffin-Video-Archive.py`)
+### Packer Tool (`Yuffin-Archive.py`)
 
 A desktop GUI application for creating and unpacking `.yuf` container files.
 
@@ -77,7 +77,7 @@ A desktop GUI application for creating and unpacking `.yuf` container files.
 2.  **Running the Application:**
     Execute the script from your terminal:
     ```bash
-    python Yuffin-Video-Archive.py
+    python Yuffin-Archive.py
     ```
 3.  **Features:**
     *   **Packing:** Select the video/audio files you want to archive, then choose a save location for the new `.yuf` container.
@@ -89,7 +89,7 @@ An elegant, standalone player for browsing the contents of `.yuf` containers.
 
 1.  **Running the Player:**
     Simply **open the `index.html` file in a modern web browser** (e.g., Google Chrome, Microsoft Edge, Firefox).
-    or open [Page](https://zbirow.github.io/Yuffin-Video-Archive/)
+    or open [Page](https://zbirow.github.io/Yuffin-Archive/)
 2.  **How to Use:**
     *   Click the "Select .yuf Container" button to load your archive.
     *   The list of videos will appear automatically.
