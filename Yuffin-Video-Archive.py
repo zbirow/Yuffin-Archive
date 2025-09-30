@@ -58,7 +58,12 @@ class YufVideoPacker(ctk.CTk):
     def select_files_to_pack(self):
         files = filedialog.askopenfilenames(
             title="Select video files",
-            filetypes=[("Video Files", "*.mp4 *.mkv *.webm *.mov *.avi"), ("All files", "*.*")]
+             filetypes=[
+                ("Media Files", "*.mp4 *.mkv *.webm *.mov *.avi *.mp3 *.flac *.wav *.ogg *.m4a"),
+                ("Video Files", "*.mp4 *.mkv *.webm *.mov *.avi"),
+                ("Audio Files", "*.mp3 *.flac *.wav *.ogg *.m4a"),
+                ("All files", "*.*")
+            ]
         )
         if files:
             self.files_to_pack_list = list(files)
@@ -93,9 +98,13 @@ class YufVideoPacker(ctk.CTk):
     def pack_worker(self, file_paths, output_path):
         """Worker function to pack video files into a .yuf container with a MIME type."""
         try:
-            MIME_TYPES = {
+           MIME_TYPES = {
+                # Video formats
                 '.mp4': 'video/mp4', '.mkv': 'video/x-matroska', '.webm': 'video/webm',
-                '.mov': 'video/quicktime', '.avi': 'video/x-msvideo'
+                '.mov': 'video/quicktime', '.avi': 'video/x-msvideo',
+                # Audio formats
+                '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg',
+                '.flac': 'audio/flac', '.m4a': 'audio/mp4'
             }
             self.update_packing_status("Analyzing files and building index...")
             
