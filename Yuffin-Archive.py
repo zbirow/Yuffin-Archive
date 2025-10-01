@@ -94,81 +94,90 @@ class YufVideoPacker(ctk.CTk):
         thread.start()
 
     def pack_worker(self, file_paths, output_path):
-        """Worker function to pack video files into a .yuf container with a MIME type."""
-        try:
-           MIME_TYPES = {
-                # Video formats
-                '.mp4': 'video/mp4', '.mkv': 'video/x-matroska', '.webm': 'video/webm',
-                '.mov': 'video/quicktime', '.avi': 'video/x-msvideo',
-                # Audio formats
-                '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg',
-                '.flac': 'audio/flac', '.m4a': 'audio/mp4',
-                # Yuffin Image Archive format
-                '.yufi': 'application/vnd.yuffin-image-archive'
-            }
-            self.update_packing_status("Analyzing files and building index...")
+    """Worker function to pack media files into a .yuf container with a MIME type."""
+    try:
+        # Define MIME types
+        MIME_TYPES = {
+            # Video formats
+            '.mp4': 'video/mp4', '.mkv': 'video/x-matroska', '.webm': 'video/webm',
+            '.mov': 'video/quicktime', '.avi': 'video/x-msvideo',
+            # Audio formats
+            '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg',
+            '.flac': 'audio/flac', '.m4a': 'audio/mp4',
+            # Yuffin Image Archive format
+            '.yufi': 'application/vnd.yuffin-image-archive'
+        }
+    
+        # Now, start the actual logic
+        self.update_packing_status("Analyzing files and building index...")
+        
+        base_index_data = []
+        for i, p in enumerate(file_paths):
+            ext = os.path.splitext(p)[1].lower()
+            mime_type = MIME_TYPES.get(ext, 'application/octet-stream')
+            base_index_data.append({
+                "id": i, "name": os.path.basename(p), "size": os.path.getsize(p), 
+                "mime": mime_type, "offset": 0
+            })
+    
+        # Iteratively calculate the final index size to get correct offsets
+        last_index_size = -1
+        final_index_b64 = b''
+        index_with_offsets = []
+        
+        while len(final_index_b64) != last_index_size:
+            last_index_size = len(final_index_b64)
+            STATIC_HEADER_SIZE = 16
+            data_start_offset = STATIC_HEADER_SIZE + (last_index_size if last_index_size != -1 else 0)
             
-            base_index_data = []
-            for i, p in enumerate(file_paths):
-                ext = os.path.splitext(p)[1].lower()
-                mime_type = MIME_TYPES.get(ext, 'application/octet-stream')
-                base_index_data.append({
-                    "id": i, "name": os.path.basename(p), "size": os.path.getsize(p), 
-                    "mime": mime_type, "offset": 0
-                })
-
-            # Iteratively calculate the final index size to get correct offsets
-            last_index_size = -1
-            final_index_b64 = b''
             index_with_offsets = []
+            current_offset = data_start_offset
+            for item in base_index_data:
+                new_item = item.copy()
+                new_item['offset'] = current_offset
+                index_with_offsets.append(new_item)
+                current_offset += new_item['size']
             
-            while len(final_index_b64) != last_index_size:
-                last_index_size = len(final_index_b64)
-                STATIC_HEADER_SIZE = 16
-                data_start_offset = STATIC_HEADER_SIZE + (last_index_size if last_index_size != -1 else 0)
+            header_json = json.dumps(index_with_offsets)
+            final_index_b64 = base64.b64encode(header_json.encode('utf-8'))
+        
+        # --- WRITING THE FILE ---
+        total_size_to_write = sum(item['size'] for item in index_with_offsets)
+        written_bytes = 0
+    
+        with open(output_path, 'wb') as f_out:
+            f_out.write(b'YUFFIN')
+            f_out.write(b'\x00\x00')
+            f_out.write(len(final_index_b64).to_bytes(8, 'big'))
+            f_out.write(final_index_b64)
+    
+            # Find the original full path for each file to read from
+            # This is safer than relying on the order if file names are not unique
+            path_map = {os.path.basename(p): p for p in file_paths}
+    
+            for item in index_with_offsets:
+                path = path_map.get(item['name'])
+                if path is None:
+                    print(f"Warning: Could not find original path for {item['name']}. Skipping.")
+                    continue
                 
-                index_with_offsets = []
-                current_offset = data_start_offset
-                for item in base_index_data:
-                    new_item = item.copy()
-                    new_item['offset'] = current_offset
-                    index_with_offsets.append(new_item)
-                    current_offset += new_item['size']
-                
-                header_json = json.dumps(index_with_offsets)
-                final_index_b64 = base64.b64encode(header_json.encode('utf-8'))
-            
-            total_size_to_write = sum(item['size'] for item in index_with_offsets)
-            written_bytes = 0
-
-            with open(output_path, 'wb') as f_out:
-                # Write the YUFFIN header
-                f_out.write(b'YUFFIN')
-                f_out.write(b'\x00\x00') # Padding
-                f_out.write(len(final_index_b64).to_bytes(8, 'big')) # Index length
-                f_out.write(final_index_b64) # Index data
-
-                # Write the binary data for each file
-                for item in index_with_offsets:
-                    path = next((p for p in file_paths if os.path.basename(p) == item['name']), None)
-                    if path is None: continue # Skip if file not found (should not happen)
-                    self.update_packing_status(f"Packing: {item['name']}")
-                    with open(path, 'rb') as f_in:
-                        while chunk := f_in.read(4 * 1024 * 1024): # Read in 4MB chunks
-                            f_out.write(chunk)
-                            written_bytes += len(chunk)
-                            self.update_packing_progress(written_bytes / total_size_to_write)
-            
-            self.update_packing_status(f"Success! Container saved to: {output_path}")
-
-        except Exception as e:
-            self.update_packing_status(f"Error: {e}")
-            self.after(0, lambda: messagebox.showerror("Packing Error", str(e)))
-        finally:
-            # Re-enable buttons and reset progress bar on completion or error
-            self.after(0, lambda: self.btn_pack.configure(state="normal"))
-            self.after(0, lambda: self.btn_select_files.configure(state="normal"))
-            self.after(0, lambda: self.update_packing_progress(0))
+                self.update_packing_status(f"Packing: {item['name']}")
+                with open(path, 'rb') as f_in:
+                    while chunk := f_in.read(4 * 1024 * 1024): # Read in 4MB chunks
+                        f_out.write(chunk)
+                        written_bytes += len(chunk)
+                        self.update_packing_progress(written_bytes / total_size_to_write)
+        
+        self.update_packing_status(f"Success! Container saved to: {output_path}")
+    
+    except Exception as e:
+        self.update_packing_status(f"Error: {e}")
+        self.after(0, lambda: messagebox.showerror("Packing Error", str(e)))
+    finally:
+        # Re-enable buttons and reset progress bar on completion or error
+        self.after(0, lambda: self.btn_pack.configure(state="normal"))
+        self.after(0, lambda: self.btn_select_files.configure(state="normal"))
+        self.after(0, lambda: self.update_packing_progress(0))
 
     def update_packing_status(self, text):
         self.after(0, lambda: self.packing_status_label.configure(text=text))
