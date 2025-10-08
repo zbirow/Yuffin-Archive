@@ -114,7 +114,7 @@ An elegant, standalone application for browsing your Yuffin archives.
     *   Use the "X" button in the corner to close the viewer and return to the launcher screen.
 
 
-# ✨Striming
+# ✨Streaming
 
 You can set up a streaming server that supports .yuf files. All episodes for a series in one file.
 
