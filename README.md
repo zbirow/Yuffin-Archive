@@ -113,6 +113,13 @@ An elegant, standalone application for browsing your Yuffin archives.
     *   The appropriate viewer will launch automatically.
     *   Use the "X" button in the corner to close the viewer and return to the launcher screen.
 
+
+# ✨Striming
+
+You can set up a streaming server that supports .yuf files. All episodes for a series in one file.
+
+[Check Here](https://github.com/zbirow/Yuffin-Archive-Streaming-Server)
+
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
