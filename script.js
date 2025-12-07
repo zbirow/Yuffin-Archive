@@ -169,16 +169,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function populateFilter() {
-            dirFilter.innerHTML = '<option value="-1">Wszystkie katalogi</option>';
-            sortedChapterDirs = directories.filter(dir => dir.startsWith('chapter_')).sort((a,b) => naturalSortKey(a).toString().localeCompare(naturalSortKey(b).toString(), undefined, {numeric: true}));
-            const sortedDirs = [...directories].sort((a,b) => naturalSortKey(a).toString().localeCompare(naturalSortKey(b).toString(), undefined, {numeric: true}));
-            sortedDirs.forEach(dir => {
-                const dirId = directories.indexOf(dir);
-                const option = document.createElement('option');
-                option.value = dirId;
-                option.textContent = (dir === '' || dir === '.') ? '[Główny katalog]' : dir;
-                dirFilter.appendChild(option);
-            });
+           dirFilter.innerHTML = '<option value="-1">Wszystkie katalogi</option>';
+           const chapterPrefixRegex = /^chapter_/i;
+           sortedChapterDirs = directories
+             .filter(dir => chapterPrefixRegex.test(dir))
+             .sort((a, b) => naturalSortKey(a).toString().localeCompare(naturalSortKey(b).toString(), undefined, { numeric: true }));
+           const sortedDirs = [...directories].sort((a, b) => naturalSortKey(a).toString().localeCompare(naturalSortKey(b).toString(), undefined, { numeric: true }));
+           sortedDirs.forEach(dir => {
+           const dirId = directories.indexOf(dir);
+           const option = document.createElement('option');
+              option.value = dirId;
+              option.textContent = (dir === '' || dir === '.') ? '[Główny katalog]' : dir;
+              dirFilter.appendChild(option);
+           });
         }
 
         function applyFilter() {
